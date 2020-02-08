@@ -1,0 +1,2 @@
+# PyCites
+Recently I had read a book “Rich Dad Poor Dad: What The Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!” by Robert T. Kiyosaki. I really like, it was interesting and I found many interesting cites and wise sentences. During reading the book on my Kindle, I highlighted many interesting fragments. However, as you know it is time-consuming to find anything in our small Kindle devices. Thus I decided to write a small Python app, which will print on my PC screen the most interesting fragments.
