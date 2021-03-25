@@ -10,88 +10,69 @@ import csv
 import balloontip as ballTip
 import time
 import random
-
-fileName = 'Kindle_Clippings.txt'
-database = 'Kindle_Clippings.csv'
-keyWord = '=========='
-
-class clipping:
-    book = ''
-    date = ''
-    cite = ''
-    size = 0
-    
-def readFile():
-    file = open(fileName,'r')
-    fileRaw = file.read()
-    print('text file uploaded')
-    file.close()
-    return fileRaw
-
-def readCSVFile():
-    temp = random.randint(0,clipping.size)
-    print('size:' + str(clipping.size))
-    print('rand:' + str(temp))
-    with open(database) as csvfile:
-        dataReader = csv.reader(csvfile,delimiter=';')
-        dataReader = list(dataReader)
-        print('##'+dataReader[temp][0]+'@@'+dataReader[temp][1]+'@@'+dataReader[temp][2]+'##')
-        try:
-            clipping.book = dataReader[temp][0]
-            clipping.date = dataReader[temp][1]
-            clipping.cite = dataReader[temp][2]
-        except:
-            print('Out of matrix exception')
-                
-def saveToCSV(fileRaw):
-    start = 0
-    end = 0
-    pre_start = 0
-    
-    csvfile = open(database, 'w+') 
-    fieldnames = 'title;data;citation\n'
-    csvfile.write(fieldnames)
-
-    while pre_start <= start:
-        pre_start = start
-        start = fileRaw.find('==========',start,len(fileRaw))+len(keyWord)+1
-        end = fileRaw.find('\n',start,len(fileRaw))
-        clipping.book = fileRaw[start:end]
-        for i in range(end,len(fileRaw)):
-            if not fileRaw[i].isspace():
-                end = i
-                break
-        start = end
         
-        end = fileRaw.find('\n',start,len(fileRaw))
-        clipping.date = fileRaw[start:end]
-        for i in range(end,len(fileRaw)):
-            if not fileRaw[i].isspace():
-                end = i
-                break
-        start = end
-        
-        end = fileRaw.find('\n',start,len(fileRaw))
-        clipping.cite = fileRaw[start:end]
-        for i in range(end,len(fileRaw)):
-            if not fileRaw[i].isspace():
-                end = i
-                break
+class Clipping:
+    clippingList = []
+
+    keyWord = '=========='
+    def __init__(self, txtFile):
+        self.txtFile = txtFile + ".txt"
+        self.readFile()
+        print(self.fileRaw)
+        self.prepareData()  
+
+    def readFile(self):
+        file = open(self.txtFile,'rt', encoding='utf-8')
+        self.fileRaw = file.read()
+        print('text file uploaded')
+        file.close()
+
+    def prepareData(self):
+        start = 0
+        end = 0
+        pre_start = 0
+
+        while pre_start <= start:
+            pre_start = start
+            start = self.fileRaw.find(self.keyWord,start,len(self.fileRaw))+len(self.keyWord)+1
+            end = self.fileRaw.find('\n',start,len(self.fileRaw))
+            book = self.fileRaw[start:end]
+            for i in range(end,len(self.fileRaw)):
+                if not self.fileRaw[i].isspace():
+                    end = i
+                    break
+            start = end
             
-        clipping.size = clipping.size + 1
-        csvfile.write(clipping.book + ';' + clipping.date + ';' + clipping.cite + '\n')
+            end = self.fileRaw.find('\n',start,len(self.fileRaw))
+            date = self.fileRaw[start:end]
+            for i in range(end,len(self.fileRaw)):
+                if not self.fileRaw[i].isspace():
+                    end = i
+                    break
+            start = end
+            
+            end = self.fileRaw.find('\n',start,len(self.fileRaw))
+            cite = self.fileRaw[start:end]
+            for i in range(end,len(self.fileRaw)):
+                if not self.fileRaw[i].isspace():
+                    end = i
+                    break
+            self.clippingList.append((book, date, cite))    
 
-    csvfile.close()
-    print('done')
-    time.sleep(1) 
-        
+        print('data preparation finished')
+        time.sleep(1) 
+
+    def returnRandomCite(self):
+        randomPick = random.randint(0, len(self.clippingList))
+        return self.clippingList[randomPick][0], self.clippingList[randomPick][2]
+
+
 if __name__ == "__main__":
-    fileRaw = readFile()
-    saveToCSV(fileRaw)
-    
+    clip = Clipping("Kindle_Clippings")
+    for x in clip.clippingList:
+        print(x)
     while True:
-        readCSVFile();
-        time.sleep(300) 
-        print(clipping.book)
-        print(clipping.cite)
-        ballTip.balloon_tip(clipping.book,clipping.cite)
+        print(clip.returnRandomCite())
+        book, cite = clip.returnRandomCite()
+        ballTip.balloon_tip(book, cite)
+        Sleep(300)
